@@ -4,7 +4,7 @@ authors = ["The Tari Development Community"]
 description = "The tari full base node implementation"
 repository = "https://github.com/tari-project/tari"
 license = "BSD-3-Clause"
-version = "1.0.0-pre.9"
+version = "1.0.0-pre.11a"
 edition = "2018"
 
 [dependencies]
@@ -31,7 +31,7 @@ chrono = { version = "0.4.19", default-features = false }
 clap = { version = "3.2", features = ["derive", "env"] }
 console-subscriber = "0.1.8"
 config = { version = "0.13.0" }
-crossterm = { version = "0.27.0", features = ["event-stream"] }
+crossterm = { version = "0.25.0", features = ["event-stream"] }
 derive_more = "0.99.17"
 either = "1.6.1"
 futures = { version = "^0.3.16", default-features = false, features = ["alloc"] }
@@ -58,7 +58,7 @@ safe = []
 libtor = ["tari_libtor"]
 
 [build-dependencies]
-tari_features = { path = "../../common/tari_features", version = "1.0.0-pre.9"}
+tari_features = { path = "../../common/tari_features", version = "1.0.0-pre.11a"}
 
 [package.metadata.cargo-machete]
 ignored = [
