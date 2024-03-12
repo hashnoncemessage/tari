@@ -149,11 +149,7 @@ mod tests {
         let label = "test";
         let input = [1u8; 32];
 
-        for network in [
-            Network::MainNet,
-            Network::TestNet,
-            Network::LocalNet,
-        ] {
+        for network in [Network::MainNet, Network::TestNet, Network::LocalNet] {
             // Generate a specific network hash
             let hash_specify_network =
                 DomainSeparatedConsensusHasher::<TestHashDomain, Blake2b<U32>>::new_with_network(label, network)
