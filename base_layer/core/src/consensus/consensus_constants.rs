@@ -415,78 +415,13 @@ impl ConsensusConstants {
         consensus_constants
     }
 
-    pub fn igor() -> Vec<Self> {
-        // `igor` is a test network, so calculating these constants are allowed rather than being hardcoded.
-        let randomx_split: u64 = 60;
-        let sha3x_split: u64 = 100 - randomx_split;
-        let randomx_target_time = 20;
-        let sha3x_target_time = randomx_target_time * (100 - sha3x_split) / sha3x_split;
-        let target_time: u64 = (randomx_target_time * sha3x_target_time) / (randomx_target_time + sha3x_target_time);
-        let difficulty_block_window = 90;
-        let future_time_limit = target_time * difficulty_block_window / 20;
-
-        let mut algos = HashMap::new();
-        algos.insert(PowAlgorithm::Sha3x, PowAlgorithmConstants {
-            // (target_time x 200_000/3) ... for easy testing
-            min_difficulty: Difficulty::from_u64(sha3x_target_time * 67_000).expect("valid difficulty"),
-            max_difficulty: Difficulty::max(),
-            target_time: sha3x_target_time,
-        });
-        algos.insert(PowAlgorithm::RandomX, PowAlgorithmConstants {
-            // (target_time x 300/3)     ... for easy testing
-            min_difficulty: Difficulty::from_u64(randomx_target_time * 100).expect("valid difficulty"),
-            max_difficulty: Difficulty::max(),
-            target_time: randomx_target_time,
-        });
-        let (input_version_range, output_version_range, kernel_version_range) = version_zero();
-        let consensus_constants = vec![ConsensusConstants {
-            effective_from_height: 0,
-            coinbase_min_maturity: 6,
-            blockchain_version: 0,
-            valid_blockchain_version_range: 0..=0,
-            future_time_limit,
-            difficulty_block_window,
-            // 65536 =  target_block_size / bytes_per_gram =  (1024*1024) / 16
-            // adj. + 95% = 127,795 - this effectively targets ~2Mb blocks closely matching the previous 19500
-            // weightings
-            max_block_transaction_weight: 127_795,
-            median_timestamp_count: 11,
-            emission_initial: 5_538_846_115 * uT,
-            emission_decay: &EMISSION_DECAY,
-            inflation_bips: 100,
-            tail_epoch_length: ANNUAL_BLOCKS,
-            max_randomx_seed_height: u64::MAX,
-            max_extra_field_size: 200,
-            proof_of_work: algos,
-            faucet_value: 0.into(), // IGOR_FAUCET_VALUE.into(),
-            transaction_weight: TransactionWeight::v1(),
-            max_script_byte_size: 2048,
-            input_version_range,
-            output_version_range,
-            kernel_version_range,
-            // igor is the first network to support the new output types
-            permitted_output_types: OutputType::all(),
-            permitted_range_proof_types: Self::all_range_proof_types(),
-            max_covenant_length: 100,
-            vn_epoch_length: 10,
-            vn_validity_period_epochs: VnEpoch(3),
-            vn_registration_min_deposit_amount: MicroMinotari(0),
-            vn_registration_lock_height: 0,
-            vn_registration_shuffle_interval: VnEpoch(100),
-            coinbase_output_features_extra_max_length: 64,
-        }];
-        #[cfg(any(test, debug_assertions))]
-        assert_hybrid_pow_constants(&consensus_constants, &[target_time], &[randomx_split], &[sha3x_split]);
-        consensus_constants
-    }
-
     /// *
     /// Esmeralda testnet has the following characteristics:
     /// * 2 min blocks on average (5 min SHA-3, 3 min MM)
     /// * 21 billion tXTR with a 2.76-year half-life
     /// * 800 T tail emission (± 1% inflation after initial 21 billion has been mined)
     /// * Coinbase lock height - 12 hours = 360 blocks
-    pub fn esmeralda() -> Vec<Self> {
+    pub fn testnet() -> Vec<Self> {
         let mut algos = HashMap::new();
         algos.insert(PowAlgorithm::Sha3x, PowAlgorithmConstants {
             min_difficulty: Difficulty::from_u64(60_000_000).expect("valid difficulty"),
@@ -901,10 +836,7 @@ mod test {
     #[test]
     fn hybrid_pow_constants_are_well_formed() {
         ConsensusConstants::localnet();
-        ConsensusConstants::igor();
-        ConsensusConstants::esmeralda();
-        ConsensusConstants::stagenet();
-        ConsensusConstants::nextnet();
+        ConsensusConstants::testnet();
         ConsensusConstants::mainnet();
     }
 
@@ -953,7 +885,7 @@ mod test {
 
     #[test]
     fn esmeralda_schedule() {
-        let esmeralda = ConsensusConstants::esmeralda();
+        let esmeralda = ConsensusConstants::testnet();
         let schedule = EmissionSchedule::new(
             esmeralda[0].emission_initial,
             esmeralda[0].emission_decay,
@@ -1064,37 +996,6 @@ mod test {
         assert_eq!(block_num, 3259846);
         assert_eq!(reward, 797 * T);
         assert_eq!(supply, 21_003_427_156_818_122 * uT);
-    }
-
-    #[test]
-    fn igor_schedule() {
-        let igor = ConsensusConstants::igor();
-        let schedule = EmissionSchedule::new(
-            igor[0].emission_initial,
-            igor[0].emission_decay,
-            igor[0].inflation_bips,
-            igor[0].tail_epoch_length,
-            igor[0].faucet_value(),
-        );
-        // No genesis block coinbase
-        assert_eq!(schedule.block_reward(0), MicroMinotari(0));
-        // Coinbases starts at block 1
-        let coinbase_offset = 1;
-        let first_reward = schedule.block_reward(coinbase_offset);
-        assert_eq!(first_reward, igor[0].emission_initial * uT);
-        assert_eq!(schedule.supply_at_block(coinbase_offset), first_reward);
-        // Tail emission starts after block 11_084_819
-        let rewards = schedule.iter().skip(11_084_819 - 25);
-        let mut previous_reward = MicroMinotari(0);
-        for (block_num, reward, supply) in rewards {
-            if reward == previous_reward {
-                assert_eq!(block_num, 11_084_796);
-                assert_eq!(supply, MicroMinotari(8_010_884_615_082_026));
-                assert_eq!(reward, MicroMinotari(303_000_000));
-                break;
-            }
-            previous_reward = reward;
-        }
     }
 
     // This function is to ensure all OutputType variants are assessed in the tests

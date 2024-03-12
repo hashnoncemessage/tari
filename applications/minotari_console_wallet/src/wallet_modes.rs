@@ -477,7 +477,21 @@ async fn run_grpc(
 mod test {
     use std::path::Path;
 
+    use tari_common_types::dammsum::compute_checksum;
+    use tari_utilities::hex::Hex;
+
     use crate::{cli::CliCommands, wallet_modes::parse_command_file};
+
+    #[test]
+    fn temp() {
+        let a = "5c4f2a4b3f3f84e047333218a84fd24f581a9d7e4f23b78e3714e9d174427d61f5";
+        let t: Vec<u8> = Hex::from_hex(a).unwrap();
+        dbg!(&t);
+        let c = compute_checksum(&t[0..32].to_vec());
+        dbg!(c);
+        dbg!(c ^ &t[32]);
+        dbg!(c ^ 0xbb);
+    }
 
     #[test]
     fn clap_parses_user_defined_commands_as_expected() {
@@ -490,15 +504,15 @@ mod test {
 
             discover-peer f6b2ca781342a3ebe30ee1643655c96f1d7c14f4d49f077695395de98ae73665
 
-            send-minotari --message Our_secret! 125T 5c4f2a4b3f3f84e047333218a84fd24f581a9d7e4f23b78e3714e9d174427d615e
-            
+            send-minotari --message Our_secret! 125T 5c4f2a4b3f3f84e047333218a84fd24f581a9d7e4f23b78e3714e9d174427d61f5
+
             burn-minotari --message Ups_these_funds_will_be_burned! 100T
 
             coin-split --message Make_many_dust_UTXOs! --fee-per-gram 2 0.001T 499
 
             make-it-rain --duration 100 --transactions-per-second 10 --start-amount 0.009200T --increase-amount 0T \
                       --start-time now --message Stressing_it_a_bit...!_(from_Feeling-a-bit-Generous) \
-                      5c4f2a4b3f3f84e047333218a84fd24f581a9d7e4f23b78e3714e9d174427d615e
+                      5c4f2a4b3f3f84e047333218a84fd24f581a9d7e4f23b78e3714e9d174427d61f5
 
             export-tx 123456789 --output-file pie.txt
 

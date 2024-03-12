@@ -60,13 +60,10 @@ pub const TARGET_NETWORK: Target = Target::TestNet;
 
 pub fn is_network_choice_valid(network: Network) -> Result<Network, NetworkCheckError> {
     match (TARGET_NETWORK, network) {
-        (Target::MainNet, n @ Network::MainNet | n @ Network::StageNet) => Ok(n),
+        (Target::MainNet, n @ Network::MainNet) => Ok(n),
         (Target::MainNet, _) => Err(NetworkCheckError::MainNetBinary(network)),
 
-        (Target::NextNet, n @ Network::NextNet) => Ok(n),
-        (Target::NextNet, _) => Err(NetworkCheckError::NextNetBinary(network)),
-
-        (Target::TestNet, n @ Network::LocalNet | n @ Network::Igor | n @ Network::Esmeralda) => Ok(n),
+        (Target::TestNet, n @ Network::LocalNet | n @ Network::TestNet) => Ok(n),
         (Target::TestNet, _) => Err(NetworkCheckError::TestNetBinary(network)),
     }
 }

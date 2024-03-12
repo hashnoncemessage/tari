@@ -170,7 +170,7 @@ mod header_validators {
 #[allow(clippy::too_many_lines)]
 async fn chain_balance_validation() {
     let factories = CryptoFactories::default();
-    let consensus_manager = ConsensusManagerBuilder::new(Network::Esmeralda).build().unwrap();
+    let consensus_manager = ConsensusManagerBuilder::new(Network::TestNet).build().unwrap();
     let genesis = consensus_manager.get_genesis_block();
     let faucet_value = 5000 * uT;
     let key_manager = create_memory_db_key_manager();
@@ -353,7 +353,7 @@ async fn chain_balance_validation() {
 #[allow(clippy::too_many_lines)]
 async fn chain_balance_validation_burned() {
     let factories = CryptoFactories::default();
-    let consensus_manager = ConsensusManagerBuilder::new(Network::Esmeralda).build().unwrap();
+    let consensus_manager = ConsensusManagerBuilder::new(Network::TestNet).build().unwrap();
     let genesis = consensus_manager.get_genesis_block();
     let faucet_value = 5000 * uT;
     let key_manager = create_memory_db_key_manager();

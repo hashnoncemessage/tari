@@ -102,20 +102,14 @@ impl Display for ApplicationType {
 pub fn grpc_default_port(app_type: ApplicationType, network: Network) -> u16 {
     match app_type {
         ApplicationType::BaseNode => match network {
-            Network::MainNet => 18102u16,
-            Network::StageNet => 18172u16,
-            Network::NextNet => 18182u16,
-            Network::Esmeralda => 18142u16,
-            Network::Igor => 18152u16,
-            Network::LocalNet => 18162u16,
+            Network::MainNet => 18_202,
+            Network::TestNet => 18_242,
+            Network::LocalNet => 18_262,
         },
         ApplicationType::ConsoleWallet => match network {
-            Network::MainNet => 18103u16,
-            Network::StageNet => 18173u16,
-            Network::NextNet => 18183u16,
-            Network::Esmeralda => 18143u16,
-            Network::Igor => 18153u16,
-            Network::LocalNet => 18163u16,
+            Network::MainNet => 18_203,
+            Network::TestNet => 18_243,
+            Network::LocalNet => 18_263,
         },
         _ => unreachable!("Application {} not supported", app_type),
     }

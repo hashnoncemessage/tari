@@ -40,12 +40,9 @@ static CURRENT_NETWORK: OnceLock<Network> = OnceLock::new();
 #[derive(Clone, Debug, PartialEq, Eq, Copy, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub enum Network {
-    MainNet = 0x00,
-    StageNet = 0x01,
-    NextNet = 0x02,
-    LocalNet = 0x10,
-    Igor = 0x24,
-    Esmeralda = 0x26,
+    MainNet = 0xaa,
+    TestNet = 0xbb,
+    LocalNet = 0xcc,
 }
 
 impl Network {
@@ -75,10 +72,7 @@ impl Network {
         use Network::*;
         match self {
             MainNet => "mainnet",
-            StageNet => "stagenet",
-            NextNet => "nextnet",
-            Igor => "igor",
-            Esmeralda => "esmeralda",
+            TestNet => "testnet",
             LocalNet => "localnet",
         }
     }
@@ -101,7 +95,7 @@ impl Default for Network {
 
     #[cfg(not(any(tari_target_network_mainnet, tari_target_network_nextnet)))]
     fn default() -> Self {
-        Network::Esmeralda
+        Network::TestNet
     }
 }
 
@@ -113,11 +107,8 @@ impl FromStr for Network {
         use Network::*;
         match value.to_lowercase().as_str() {
             "mainnet" => Ok(MainNet),
-            "nextnet" => Ok(NextNet),
-            "stagenet" => Ok(StageNet),
+            "testnet" => Ok(TestNet),
             "localnet" => Ok(LocalNet),
-            "igor" => Ok(Igor),
-            "esmeralda" | "esme" => Ok(Esmeralda),
             invalid => Err(ConfigurationError::new(
                 "network",
                 Some(value.to_string()),
@@ -146,11 +137,8 @@ impl TryFrom<u8> for Network {
     fn try_from(v: u8) -> Result<Self, ConfigurationError> {
         match v {
             x if x == Network::MainNet as u8 => Ok(Network::MainNet),
-            x if x == Network::StageNet as u8 => Ok(Network::StageNet),
-            x if x == Network::NextNet as u8 => Ok(Network::NextNet),
+            x if x == Network::TestNet as u8 => Ok(Network::TestNet),
             x if x == Network::LocalNet as u8 => Ok(Network::LocalNet),
-            x if x == Network::Igor as u8 => Ok(Network::Igor),
-            x if x == Network::Esmeralda as u8 => Ok(Network::Esmeralda),
             _ => Err(ConfigurationError::new(
                 "network",
                 Some(v.to_string()),
@@ -174,50 +162,35 @@ mod test {
     fn network_bytes() {
         // get networks
         let mainnet = Network::MainNet;
-        let stagenet = Network::StageNet;
-        let nextnet = Network::NextNet;
+        let testnet = Network::TestNet;
         let localnet = Network::LocalNet;
-        let igor = Network::Igor;
-        let esmeralda = Network::Esmeralda;
 
         // test .as_byte()
-        assert_eq!(mainnet.as_byte(), 0x00_u8);
-        assert_eq!(stagenet.as_byte(), 0x01_u8);
-        assert_eq!(nextnet.as_byte(), 0x02_u8);
-        assert_eq!(localnet.as_byte(), 0x10_u8);
-        assert_eq!(igor.as_byte(), 0x24_u8);
-        assert_eq!(esmeralda.as_byte(), 0x26_u8);
+        assert_eq!(mainnet.as_byte(), 0xaa_u8);
+        assert_eq!(testnet.as_byte(), 0xbb_u8);
+        assert_eq!(localnet.as_byte(), 0xcc_u8);
 
         // test .as_key_str()
         assert_eq!(mainnet.as_key_str(), "mainnet");
-        assert_eq!(stagenet.as_key_str(), "stagenet");
-        assert_eq!(nextnet.as_key_str(), "nextnet");
+        assert_eq!(testnet.as_key_str(), "testnet");
         assert_eq!(localnet.as_key_str(), "localnet");
-        assert_eq!(igor.as_key_str(), "igor");
-        assert_eq!(esmeralda.as_key_str(), "esmeralda");
     }
 
     #[test]
     fn network_default() {
         let network = Network::default();
         #[cfg(tari_target_network_mainnet)]
-        assert!(matches!(network, Network::MainNet | Network::StageNet));
-        #[cfg(tari_target_network_nextnet)]
-        assert_eq!(network, Network::NextNet);
-        #[cfg(not(any(tari_target_network_mainnet, tari_target_network_nextnet)))]
-        assert_eq!(network, Network::Esmeralda);
+        assert!(matches!(network, Network::MainNet));
+        #[cfg(not(any(tari_target_network_mainnet)))]
+        assert_eq!(network, Network::TestNet);
     }
 
     #[test]
     fn network_from_str() {
         // test .from_str()
         assert_eq!(Network::from_str("mainnet").unwrap(), Network::MainNet);
-        assert_eq!(Network::from_str("stagenet").unwrap(), Network::StageNet);
-        assert_eq!(Network::from_str("nextnet").unwrap(), Network::NextNet);
+        assert_eq!(Network::from_str("testnet").unwrap(), Network::TestNet);
         assert_eq!(Network::from_str("localnet").unwrap(), Network::LocalNet);
-        assert_eq!(Network::from_str("igor").unwrap(), Network::Igor);
-        assert_eq!(Network::from_str("esmeralda").unwrap(), Network::Esmeralda);
-        assert_eq!(Network::from_str("esme").unwrap(), Network::Esmeralda);
         // catch error case
         let err_network = Network::from_str("invalid network");
         assert!(err_network.is_err());
@@ -225,11 +198,8 @@ mod test {
 
     #[test]
     fn network_from_byte() {
-        assert_eq!(Network::try_from(0x00).unwrap(), Network::MainNet);
-        assert_eq!(Network::try_from(0x01).unwrap(), Network::StageNet);
-        assert_eq!(Network::try_from(0x02).unwrap(), Network::NextNet);
-        assert_eq!(Network::try_from(0x10).unwrap(), Network::LocalNet);
-        assert_eq!(Network::try_from(0x24).unwrap(), Network::Igor);
-        assert_eq!(Network::try_from(0x26).unwrap(), Network::Esmeralda);
+        assert_eq!(Network::try_from(0xaa).unwrap(), Network::MainNet);
+        assert_eq!(Network::try_from(0xbb).unwrap(), Network::TestNet);
+        assert_eq!(Network::try_from(0xcc).unwrap(), Network::LocalNet);
     }
 }
