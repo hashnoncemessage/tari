@@ -309,7 +309,7 @@ fn kernel_hash() {
     #[cfg(tari_target_network_testnet)]
     assert_eq!(
         &k.hash().to_hex(),
-        "38b03d013f941e86c027969fbbc190ca2a28fa2d7ac075d50dbfb6232deee646"
+        "9e7a41491065ba33645211005aaaa9016f2549438b61ce152bd75e39f8126108"
     );
 }
 
@@ -346,7 +346,7 @@ fn kernel_metadata() {
     #[cfg(tari_target_network_testnet)]
     assert_eq!(
         &k.hash().to_hex(),
-        "ebc852fbac798c25ce497b416f69ec11a97e186aacaa10e2bb4ca5f5a0f197f2"
+        "8824f14bb03882c97d731655ca72daa2accf273ad8f1c9f8db199de95ce6033b"
     )
 }
 

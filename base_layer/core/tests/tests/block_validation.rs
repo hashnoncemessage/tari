@@ -99,7 +99,7 @@ async fn test_monero_blocks() {
     let seed2 = "9f02e032f9b15d2aded991e0f68cc3c3427270b568b782e55fbd269ead0bad98";
 
     let key_manager = create_memory_db_key_manager();
-    let network = Network::Esmeralda;
+    let network = Network::TestNet;
     let cc = ConsensusConstantsBuilder::new(network)
         .with_max_randomx_seed_height(1)
         .clear_proof_of_work()
@@ -333,7 +333,7 @@ async fn inputs_are_not_malleable() {
 async fn test_orphan_validator() {
     let factories = CryptoFactories::default();
     let key_manager = create_memory_db_key_manager();
-    let network = Network::Igor;
+    let network = Network::TestNet;
     let consensus_constants = ConsensusConstantsBuilder::new(network)
         .with_max_block_transaction_weight(325)
         .build();
@@ -469,7 +469,7 @@ async fn test_orphan_validator() {
 #[allow(clippy::too_many_lines)]
 async fn test_orphan_body_validation() {
     let factories = CryptoFactories::default();
-    let network = Network::Igor;
+    let network = Network::TestNet;
     // we dont want localnet's 1 difficulty or the full mined difficulty of weather wax but we want some.
     let sha3x_constants = PowAlgorithmConstants {
         min_difficulty: Difficulty::from_u64(10).expect("valid difficulty"),
@@ -686,7 +686,7 @@ OutputFeatures::default()),
 async fn test_header_validation() {
     let factories = CryptoFactories::default();
     let key_manager = create_memory_db_key_manager();
-    let network = Network::Igor;
+    let network = Network::TestNet;
     // we dont want localnet's 1 difficulty or the full mined difficulty of weather wax but we want some.
     let sha3x_constants = PowAlgorithmConstants {
         min_difficulty: Difficulty::from_u64(20).expect("valid difficulty"),
@@ -806,7 +806,7 @@ OutputFeatures::default()),
 #[allow(clippy::too_many_lines)]
 async fn test_block_sync_body_validator() {
     let factories = CryptoFactories::default();
-    let network = Network::Igor;
+    let network = Network::TestNet;
     let consensus_constants = ConsensusConstantsBuilder::new(network)
         .with_max_block_transaction_weight(400)
         .build();

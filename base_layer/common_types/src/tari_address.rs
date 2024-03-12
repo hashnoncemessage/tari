@@ -223,7 +223,7 @@ mod test {
         let public_key = PublicKey::from_secret_key(&PrivateKey::random(&mut rng));
 
         // Generate an emoji ID from the public key and ensure we recover it
-        let emoji_id_from_public_key = TariAddress::from_public_key(&public_key, Network::Esmeralda);
+        let emoji_id_from_public_key = TariAddress::from_public_key(&public_key, Network::TestNet);
         assert_eq!(emoji_id_from_public_key.public_key(), &public_key);
 
         // Check the size of the corresponding emoji string
@@ -246,7 +246,7 @@ mod test {
         let public_key = PublicKey::from_secret_key(&PrivateKey::random(&mut rng));
 
         // Generate an emoji ID from the public key and ensure we recover it
-        let address = TariAddress::from_public_key(&public_key, Network::Esmeralda);
+        let address = TariAddress::from_public_key(&public_key, Network::TestNet);
 
         let buff = address.to_bytes();
         let hex = address.to_hex();
@@ -254,13 +254,13 @@ mod test {
         let address_buff = TariAddress::from_bytes(&buff);
         assert_eq!(address_buff, Ok(address.clone()));
 
-        let address_buff = TariAddress::from_bytes_with_network(&buff, Network::Esmeralda);
+        let address_buff = TariAddress::from_bytes_with_network(&buff, Network::TestNet);
         assert_eq!(address_buff, Ok(address.clone()));
 
         let address_hex = TariAddress::from_hex(&hex);
         assert_eq!(address_hex, Ok(address.clone()));
 
-        let address_hex = TariAddress::from_hex_with_network(&hex, Network::Esmeralda);
+        let address_hex = TariAddress::from_hex_with_network(&hex, Network::TestNet);
         assert_eq!(address_hex, Ok(address));
     }
 
@@ -310,9 +310,9 @@ mod test {
         let public_key = PublicKey::from_secret_key(&PrivateKey::random(&mut rng));
 
         // Generate an address using a valid network and ensure it's not valid on another network
-        let address = TariAddress::from_public_key(&public_key, Network::Esmeralda);
+        let address = TariAddress::from_public_key(&public_key, Network::TestNet);
         assert_eq!(
-            TariAddress::from_bytes_with_network(&address.to_bytes(), Network::Igor),
+            TariAddress::from_bytes_with_network(&address.to_bytes(), Network::LocalNet),
             Err(TariAddressError::InvalidNetworkOrChecksum)
         );
 
@@ -320,7 +320,7 @@ mod test {
         let mut address_bytes = address.to_bytes();
         address_bytes[32] ^= 0xFF;
         assert_eq!(
-            TariAddress::from_bytes_with_network(&address_bytes, Network::Esmeralda),
+            TariAddress::from_bytes_with_network(&address_bytes, Network::TestNet),
             Err(TariAddressError::InvalidNetworkOrChecksum)
         );
     }
@@ -331,7 +331,7 @@ mod test {
         let mut bytes = [0; 33].to_vec();
         bytes[0] = 1;
         let checksum = compute_checksum(&bytes[0..32].to_vec());
-        bytes[32] = Network::Esmeralda.as_byte() ^ checksum;
+        bytes[32] = Network::TestNet.as_byte() ^ checksum;
         let emoji_string = bytes.iter().map(|b| EMOJI[*b as usize]).collect::<String>();
 
         // This emoji string contains an invalid checksum

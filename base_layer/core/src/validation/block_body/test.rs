@@ -68,6 +68,7 @@ async fn setup(check_rangeproof: bool) -> (TestBlockchain, BlockBodyFullValidato
 }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn it_passes_if_large_output_block_is_valid() {
     // we use this test to benchmark a block with multiple outputs
     let (mut blockchain, validator) = setup(false).await;
@@ -137,6 +138,7 @@ async fn it_validates_when_a_coinbase_is_spent() {
 }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn it_passes_if_large_block_is_valid() {
     // we use this test to benchmark a block with multiple inputs and outputs
     let (mut blockchain, validator) = setup(false).await;

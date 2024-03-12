@@ -9215,7 +9215,7 @@ mod test {
             let private_key = private_key_generate();
             let public_key = public_key_from_private_key(private_key, error_ptr);
             assert_eq!(error, 0);
-            let address = tari_address_from_private_key(private_key, 0x26, error_ptr);
+            let address = tari_address_from_private_key(private_key, Network::TestNet.as_byte().into(), error_ptr);
             assert_eq!(error, 0);
             let private_bytes = private_key_get_bytes(private_key, error_ptr);
             assert_eq!(error, 0);
@@ -9456,7 +9456,7 @@ mod test {
             let mut error = 0;
             let error_ptr = &mut error as *mut c_int;
             let test_contact_private_key = private_key_generate();
-            let test_address = tari_address_from_private_key(test_contact_private_key, 0x10, error_ptr);
+            let test_address = tari_address_from_private_key(test_contact_private_key, Network::TestNet.as_byte().into(), error_ptr);
             let test_str = "Test Contact";
             let test_contact_str = CString::new(test_str).unwrap();
             let test_contact_alias: *const c_char = CString::into_raw(test_contact_str) as *const c_char;

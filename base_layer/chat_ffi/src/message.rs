@@ -475,7 +475,7 @@ mod test {
     #[test]
     fn test_reading_message_address() {
         let address =
-            TariAddress::from_hex("0c017c5cd01385f34ac065e3b05948326dc55d2494f120c6f459a07389011b4ec1").unwrap();
+            TariAddress::from_hex("0c017c5cd01385f34ac065e3b05948326dc55d2494f120c6f459a07389011b4e7b").unwrap();
         let message = MessageBuilder::new().address(address.clone()).build();
 
         let message_ptr = Box::into_raw(Box::new(message));

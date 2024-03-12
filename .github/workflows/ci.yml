@@ -170,9 +170,8 @@ jobs:
     strategy:
       matrix:
         tari_target_network: [
-          { target: "testnet", network: "esmeralda" },
-          { target: "nextnet", network: "nextnet" },
-          { target: "mainnet", network: "stagenet" },
+          { target: "testnet", network: "testnet" },
+          { target: "mainnet", network: "mainnet" },
         ]
     env:
       TARI_TARGET_NETWORK: ${{ matrix.tari_target_network.target }}

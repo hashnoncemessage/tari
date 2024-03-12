@@ -26,7 +26,6 @@ use crate::{Feature, FEATURE_LIST};
 
 pub enum Target {
     TestNet,
-    NextNet,
     MainNet,
 }
 
@@ -34,7 +33,6 @@ impl Target {
     pub const fn as_key_str(&self) -> &'static str {
         match self {
             Target::MainNet => "mainnet",
-            Target::NextNet => "nextnet",
             Target::TestNet => "testnet",
         }
     }
@@ -45,7 +43,6 @@ impl Target {
         // duplication allows us to leave the crate dependency free.
         match value.to_lowercase().as_str() {
             "mainnet" | "stagenet" => Target::MainNet,
-            "nextnet" => Target::NextNet,
             _ => Target::TestNet,
         }
     }
@@ -55,7 +52,6 @@ impl Display for Target {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Target::TestNet => f.write_str("TestNet"),
-            Target::NextNet => f.write_str("NextNet"),
             Target::MainNet => f.write_str("MainNet"),
         }
     }
@@ -99,10 +95,6 @@ pub fn list_removed_features() {
 pub fn resolve_features(target: Target) -> Result<(), String> {
     match target {
         Target::MainNet => { /* No features are active at all */ },
-        Target::NextNet => FEATURE_LIST
-            .iter()
-            .filter(|f| f.is_active_in_nextnet())
-            .for_each(activate_feature),
         Target::TestNet => FEATURE_LIST
             .iter()
             .filter(|f| f.is_active_in_testnet())

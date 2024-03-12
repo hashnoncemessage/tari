@@ -271,7 +271,7 @@ async fn test_listening_initial_fallen_behind() {
 #[tokio::test]
 async fn test_event_channel() {
     let temp_dir = tempdir().unwrap();
-    let (node, consensus_manager) = BaseNodeBuilder::new(Network::Esmeralda.into())
+    let (node, consensus_manager) = BaseNodeBuilder::new(Network::TestNet.into())
         .start(temp_dir.path().to_str().unwrap(), BlockchainDatabaseConfig::default())
         .await;
     // let shutdown = Shutdown::new();

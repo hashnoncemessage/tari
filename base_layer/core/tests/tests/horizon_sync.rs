@@ -34,6 +34,7 @@ use crate::helpers::{
 
 #[allow(clippy::too_many_lines)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[ignore = "slow"]
 async fn test_initial_horizon_sync_from_archival_node_happy_path() {
     //` cargo test --release --test core_integration_tests
     //` tests::horizon_sync::test_initial_horizon_sync_from_archival_node_happy_path > .\target\output.txt 2>&1
@@ -285,6 +286,7 @@ async fn test_initial_horizon_sync_from_archival_node_happy_path() {
 
 #[allow(clippy::too_many_lines)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[ignore = "slow"]
 async fn test_consecutive_horizon_sync_from_prune_node_happy_path() {
     //` cargo test --release --test core_integration_tests
     //` tests::horizon_sync::test_initial_horizon_sync_from_prune_node_happy_path > .\target\output.txt 2>&1

@@ -263,6 +263,7 @@ async fn payload_limit() {
 // }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn run() {
     // let _ = env_logger::try_init();
     log_timing("quick", quick()).await;

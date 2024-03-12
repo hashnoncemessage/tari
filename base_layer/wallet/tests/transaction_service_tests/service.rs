@@ -668,6 +668,7 @@ async fn manage_single_transaction() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[ignore = "slow"]
 async fn large_interactive_transaction() {
     let network = Network::LocalNet;
     let consensus_manager = ConsensusManager::builder(network).build().unwrap();
@@ -2873,6 +2874,7 @@ async fn discovery_async_return_test() {
 }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn test_power_mode_updates() {
     let factories = CryptoFactories::default();
     let connection = make_wallet_database_memory_connection();

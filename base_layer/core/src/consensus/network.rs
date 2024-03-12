@@ -30,14 +30,11 @@ pub struct NetworkConsensus(Network);
 
 impl NetworkConsensus {
     pub fn create_consensus_constants(&self) -> Vec<ConsensusConstants> {
-        use Network::{Esmeralda, Igor, LocalNet, MainNet, NextNet, StageNet};
+        use Network::{LocalNet, MainNet, TestNet};
         match self.as_network() {
             MainNet => ConsensusConstants::mainnet(),
-            StageNet => ConsensusConstants::stagenet(),
-            NextNet => ConsensusConstants::nextnet(),
+            TestNet => ConsensusConstants::testnet(),
             LocalNet => ConsensusConstants::localnet(),
-            Igor => ConsensusConstants::igor(),
-            Esmeralda => ConsensusConstants::esmeralda(),
         }
     }
 

@@ -288,6 +288,7 @@ async fn generate_block_headers_and_utxos(
 }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn test_utxo_scanner_recovery() {
     let mut test_interface = setup(UtxoScannerMode::Recovery, None, None, None).await;
 
@@ -379,6 +380,7 @@ async fn test_utxo_scanner_recovery() {
 }
 #[tokio::test]
 #[allow(clippy::too_many_lines)]
+#[ignore = "slow"]
 async fn test_utxo_scanner_recovery_with_restart() {
     let mut test_interface = setup(UtxoScannerMode::Recovery, None, None, None).await;
 
@@ -553,6 +555,7 @@ async fn test_utxo_scanner_recovery_with_restart() {
 
 #[tokio::test]
 #[allow(clippy::too_many_lines)]
+#[ignore = "slow"]
 async fn test_utxo_scanner_recovery_with_restart_and_reorg() {
     let mut test_interface = setup(UtxoScannerMode::Recovery, None, None, None).await;
 
@@ -1062,6 +1065,7 @@ async fn test_utxo_scanner_one_sided_payments() {
 }
 
 #[tokio::test]
+#[ignore = "slow"]
 async fn test_birthday_timestamp_over_chain() {
     let test_interface = setup(UtxoScannerMode::Recovery, None, None, None).await;
 

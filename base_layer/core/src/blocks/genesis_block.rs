@@ -41,18 +41,15 @@ const NOT_BEFORE_PROOF_BYTES_SIZE: usize = u16::MAX as usize;
 
 /// Returns the genesis block for the selected network.
 pub fn get_genesis_block(network: Network) -> ChainBlock {
-    use Network::{Esmeralda, Igor, LocalNet, MainNet, NextNet, StageNet};
+    use Network::{LocalNet, MainNet, TestNet};
     match network {
         MainNet => get_mainnet_genesis_block(),
-        StageNet => get_stagenet_genesis_block(),
-        NextNet => get_nextnet_genesis_block(),
-        Igor => get_igor_genesis_block(),
-        Esmeralda => get_esmeralda_genesis_block(),
+        TestNet => get_testnet_genesis_block(),
         LocalNet => get_localnet_genesis_block(),
     }
 }
 
-fn add_faucet_utxos_to_genesis_block(file: &str, block: &mut Block) {
+fn _add_faucet_utxos_to_genesis_block(file: &str, block: &mut Block) {
     let mut utxos = Vec::new();
     let mut counter = 1;
     let lines_count = file.lines().count();
@@ -103,189 +100,30 @@ fn print_mr_values(block: &mut Block, print: bool) {
     println!("vn mr: {}", block.header.validator_node_mr.to_hex());
 }
 
-pub fn get_stagenet_genesis_block() -> ChainBlock {
-    let mut block = get_stagenet_genesis_block_raw();
-
-    // Add faucet utxos - enable/disable as required
-    let add_faucet_utxos = true;
-    if add_faucet_utxos {
-        // NB! Update 'consensus_constants.rs/pub fn igor()/ConsensusConstants {faucet_value: ?}' with total value
-        // NB: `stagenet_genesis_sanity_check` must pass
-        let file_contents = include_str!("faucets/stagenet_faucet.json");
-        add_faucet_utxos_to_genesis_block(file_contents, &mut block);
-        // Enable print only if you need to generate new Merkle roots, then disable it again
-        let print_values = false;
-        print_mr_values(&mut block, print_values);
-
-        // Hardcode the Merkle roots once they've been computed above
-        block.header.kernel_mr =
-            FixedHash::from_hex("a08ff15219beea81d4131465290443fb3bd99d28b8af85975dbb2c77cb4cb5a0").unwrap();
-        block.header.output_mr =
-            FixedHash::from_hex("435f13e21be06b0d0ae9ad3869ac7c723edd933983fa2e26df843c82594b3245").unwrap();
-        block.header.validator_node_mr =
-            FixedHash::from_hex("277da65c40b2cf99db86baedb903a3f0a38540f3a94d40c826eecac7e27d5dfc").unwrap();
-    }
-
-    let accumulated_data = BlockHeaderAccumulatedData {
-        hash: block.hash(),
-        total_kernel_offset: block.header.total_kernel_offset.clone(),
-        achieved_difficulty: Difficulty::min(),
-        total_accumulated_difficulty: 1.into(),
-        accumulated_randomx_difficulty: AccumulatedDifficulty::min(),
-        accumulated_sha3x_difficulty: AccumulatedDifficulty::min(),
-        target_difficulty: Difficulty::min(),
-    };
-    ChainBlock::try_construct(Arc::new(block), accumulated_data).unwrap()
-}
-
-fn get_stagenet_genesis_block_raw() -> Block {
-    // Set genesis timestamp
-    let genesis_timestamp = DateTime::parse_from_rfc2822("07 Nov 2024 08:00:00 +0200").expect("parse may not fail");
-    let not_before_proof = b"i am the stagenet genesis block, watch out, here i come \
-        \
-        The New York Times , 2000/01/01 \
-        \
-        Lorem Ipsum \
-        \
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore \
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id \
-        est laborum.";
-    get_raw_block(&genesis_timestamp, &not_before_proof.to_vec())
-}
-
-pub fn get_nextnet_genesis_block() -> ChainBlock {
-    let mut block = get_nextnet_genesis_block_raw();
-
-    // Add faucet utxos - enable/disable as required
-    let add_faucet_utxos = true;
-    if add_faucet_utxos {
-        // NB! Update 'consensus_constants.rs/pub fn igor()/ConsensusConstants {faucet_value: ?}' with total value
-        // NB: `nextnet_genesis_sanity_check` must pass
-        let file_contents = include_str!("faucets/nextnet_faucet.json");
-        add_faucet_utxos_to_genesis_block(file_contents, &mut block);
-        // Enable print only if you need to generate new Merkle roots, then disable it again
-        let print_values = false;
-        print_mr_values(&mut block, print_values);
-
-        // Hardcode the Merkle roots once they've been computed above
-        block.header.kernel_mr =
-            FixedHash::from_hex("36881d87e25183f5189d2dca5f7da450c399e7006dafd9bd9240f73a5fb3f0ad").unwrap();
-        block.header.output_mr =
-            FixedHash::from_hex("7b65d5140485b44e33eef3690d46c41e4dc5c4520ad7464d7740f376f4f0a728").unwrap();
-        block.header.validator_node_mr =
-            FixedHash::from_hex("277da65c40b2cf99db86baedb903a3f0a38540f3a94d40c826eecac7e27d5dfc").unwrap();
-    }
-
-    let accumulated_data = BlockHeaderAccumulatedData {
-        hash: block.hash(),
-        total_kernel_offset: block.header.total_kernel_offset.clone(),
-        achieved_difficulty: Difficulty::min(),
-        total_accumulated_difficulty: 1.into(),
-        accumulated_randomx_difficulty: AccumulatedDifficulty::min(),
-        accumulated_sha3x_difficulty: AccumulatedDifficulty::min(),
-        target_difficulty: Difficulty::min(),
-    };
-    ChainBlock::try_construct(Arc::new(block), accumulated_data).unwrap()
-}
-
-fn get_nextnet_genesis_block_raw() -> Block {
-    // Set genesis timestamp
-    let genesis_timestamp = DateTime::parse_from_rfc2822("12 Dec 2023 18:10:00 +0200").expect("parse may not fail");
-    // Let us add a "not before" proof to the genesis block
-    let not_before_proof = b"nextnet has a blast, its prowess echoed in every gust \
-        \
-        The New York Times , 2000/01/01 \
-        \
-        Lorem Ipsum \
-        \
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore \
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id \
-        est laborum.";
-    get_raw_block(&genesis_timestamp, &not_before_proof.to_vec())
-}
-
 pub fn get_mainnet_genesis_block() -> ChainBlock {
     unimplemented!()
 }
 
-pub fn get_igor_genesis_block() -> ChainBlock {
+pub fn get_testnet_genesis_block() -> ChainBlock {
     // lets get the block
-    let mut block = get_igor_genesis_block_raw();
-
-    // Add faucet utxos - enable/disable as required
-    let add_faucet_utxos = false;
-    if add_faucet_utxos {
-        // NB! Update 'consensus_constants.rs/pub fn igor()/ConsensusConstants {faucet_value: ?}' with total value
-        // NB: `igor_genesis_sanity_check` must pass
-        let file_contents = include_str!("faucets/igor_faucet.json");
-        add_faucet_utxos_to_genesis_block(file_contents, &mut block);
-        // Enable print only if you need to generate new Merkle roots, then disable it again
-        let print_values = false;
-        print_mr_values(&mut block, print_values);
-
-        // Hardcode the Merkle roots once they've been computed above
-        block.header.kernel_mr =
-            FixedHash::from_hex("bc5d677b0b8349adc9d7e4a18ace7406986fc7017866f4fd351ecb0f35d6da5e").unwrap();
-        block.header.output_mr =
-            FixedHash::from_hex("d227ba7b215eab4dae9e0d5a678b84ffbed1d7d3cebdeafae4704e504bd2e5f3").unwrap();
-        block.header.validator_node_mr =
-            FixedHash::from_hex("277da65c40b2cf99db86baedb903a3f0a38540f3a94d40c826eecac7e27d5dfc").unwrap();
-    }
-
-    let accumulated_data = BlockHeaderAccumulatedData {
-        hash: block.hash(),
-        total_kernel_offset: block.header.total_kernel_offset.clone(),
-        achieved_difficulty: Difficulty::min(),
-        total_accumulated_difficulty: 1.into(),
-        accumulated_randomx_difficulty: AccumulatedDifficulty::min(),
-        accumulated_sha3x_difficulty: AccumulatedDifficulty::min(),
-        target_difficulty: Difficulty::min(),
-    };
-    ChainBlock::try_construct(Arc::new(block), accumulated_data).unwrap()
-}
-
-fn get_igor_genesis_block_raw() -> Block {
-    // Set genesis timestamp
-    let genesis_timestamp = DateTime::parse_from_rfc2822("12 Dec 2023 08:20:00 +0200").expect("parse may not fail");
-    // Let us add a "not before" proof to the genesis block
-    let not_before_proof = b"but igor is the best, it is whispered in the wind \
-        \
-        The New York Times , 2000/01/01 \
-        \
-        Lorem Ipsum \
-        \
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore \
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id \
-        est laborum.";
-    get_raw_block(&genesis_timestamp, &not_before_proof.to_vec())
-}
-
-pub fn get_esmeralda_genesis_block() -> ChainBlock {
-    // lets get the block
-    let mut block = get_esmeralda_genesis_block_raw();
+    let mut block = get_testnet_genesis_block_raw();
 
     // Add faucet utxos - enable/disable as required
     let add_faucet_utxos = true;
     if add_faucet_utxos {
         // NB! Update 'consensus_constants.rs/pub fn esmeralda()/ConsensusConstants {faucet_value: ?}' with total value
         // NB: `esmeralda_genesis_sanity_check` must pass
-        let file_contents = include_str!("faucets/esmeralda_faucet.json");
-        add_faucet_utxos_to_genesis_block(file_contents, &mut block);
+        // let file_contents = include_str!("faucets/testnet.json");
+        // add_faucet_utxos_to_genesis_block(file_contents, &mut block);
         // Enable print only if you need to generate new Merkle roots, then disable it again
         let print_values = false;
         print_mr_values(&mut block, print_values);
 
         // Hardcode the Merkle roots once they've been computed above
         block.header.kernel_mr =
-            FixedHash::from_hex("3f4011ec1e8ddfbd66fb7331c5623b38f529a66e81233d924df85f2070b2aacb").unwrap();
+            FixedHash::from_hex("c14803066909d6d22abf0d2d2782e8936afc3f713f2af3a4ef5c42e8400c1303").unwrap();
         block.header.output_mr =
-            FixedHash::from_hex("3e40efda288a57d3319c63388dd47ffe4b682baaf6a3b58622ec94d77ad712a2").unwrap();
+            FixedHash::from_hex("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
         block.header.validator_node_mr =
             FixedHash::from_hex("277da65c40b2cf99db86baedb903a3f0a38540f3a94d40c826eecac7e27d5dfc").unwrap();
     }
@@ -302,22 +140,11 @@ pub fn get_esmeralda_genesis_block() -> ChainBlock {
     ChainBlock::try_construct(Arc::new(block), accumulated_data).unwrap()
 }
 
-fn get_esmeralda_genesis_block_raw() -> Block {
+fn get_testnet_genesis_block_raw() -> Block {
     // Set genesis timestamp
-    let genesis_timestamp = DateTime::parse_from_rfc2822("20 Feb 2024 08:01:00 +0200").expect("parse may not fail");
+    let genesis_timestamp = DateTime::parse_from_rfc2822("12 Mar 2024 08:00:00 +0200").unwrap();
     // Let us add a "not before" proof to the genesis block
-    let not_before_proof =
-        b"as I sip my drink, thoughts of esmeralda consume my mind, like a refreshing nourishing draught \
-        \
-        The New York Times , 2000/01/01 \
-        \
-        Lorem Ipsum \
-        \
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore \
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id \
-        est laborum.";
+    let not_before_proof = b"Tari on brink of second premine for founders lmao 12/03/2024";
     get_raw_block(&genesis_timestamp, &not_before_proof.to_vec())
 }
 
@@ -419,37 +246,11 @@ mod test {
 
     #[test]
     #[cfg(tari_target_network_testnet)]
-    fn esme_genesis_sanity_check() {
-        // Note: Generate new data for `pub fn get_esmeralda_genesis_block()` and `fn get_esmeralda_genesis_block_raw()`
+    fn testnet_genesis_sanity_check() {
+        // Note: Generate new data for `pub fn get_testnet_genesis_block()` and `fn get_testnet_genesis_block_raw()`
         // if consensus values change, e.g. new faucet or other
-        let block = get_esmeralda_genesis_block();
-        check_block(Network::Esmeralda, &block, 100, 1);
-    }
-
-    #[test]
-    #[cfg(tari_target_network_nextnet)]
-    fn nextnet_genesis_sanity_check() {
-        // Note: Generate new data for `pub fn get_nextnet_genesis_block()` and `fn get_stagenet_genesis_block_raw()`
-        // if consensus values change, e.g. new faucet or other
-        let block = get_nextnet_genesis_block();
-        check_block(Network::NextNet, &block, 100, 1);
-    }
-
-    #[test]
-    #[cfg(tari_target_network_mainnet)]
-    fn stagenet_genesis_sanity_check() {
-        Network::set_current(Network::StageNet).unwrap();
-        // Note: Generate new data for `pub fn get_stagenet_genesis_block()` and `fn get_stagenet_genesis_block_raw()`
-        // if consensus values change, e.g. new faucet or other
-        let block = get_stagenet_genesis_block();
-        check_block(Network::StageNet, &block, 100, 1);
-    }
-
-    #[test]
-    fn igor_genesis_sanity_check() {
-        // Note: If outputs and kernels are added, this test will fail unless you explicitly check that network == Igor
-        let block = get_igor_genesis_block();
-        check_block(Network::Igor, &block, 0, 0);
+        let block = get_testnet_genesis_block();
+        check_block(Network::TestNet, &block, 0, 0);
     }
 
     #[test]

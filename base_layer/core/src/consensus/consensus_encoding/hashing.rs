@@ -92,7 +92,7 @@ mod tests {
 
         // Generate a stagenet hash
         let hash_stagenet =
-            DomainSeparatedConsensusHasher::<TestHashDomain, Blake2b<U32>>::new_with_network(label, Network::StageNet)
+            DomainSeparatedConsensusHasher::<TestHashDomain, Blake2b<U32>>::new_with_network(label, Network::TestNet)
                 .chain(&input)
                 .finalize();
 
@@ -151,11 +151,8 @@ mod tests {
 
         for network in [
             Network::MainNet,
-            Network::StageNet,
-            Network::NextNet,
+            Network::TestNet,
             Network::LocalNet,
-            Network::Igor,
-            Network::Esmeralda,
         ] {
             // Generate a specific network hash
             let hash_specify_network =
