@@ -8,6 +8,9 @@ name: CI
       - opened
       - reopened
       - synchronize
+  push:
+    branches:
+      - development
   merge_group:
 
 env:
