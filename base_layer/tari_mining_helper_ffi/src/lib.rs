@@ -606,8 +606,8 @@ mod tests {
         #[cfg(tari_target_network_mainnet)]
         let (nonce, difficulty, network) = match Network::get_current_or_user_setting_or_default() {
             Network::MainNet => (
-                3145418102407526886,
-                Difficulty::from_u64(1505).unwrap(),
+                15125983849472285679,
+                Difficulty::from_u64(4550).unwrap(),
                 Network::MainNet,
             ),
             _ => panic!("Invalid network for mainnet target"),

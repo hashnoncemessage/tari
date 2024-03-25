@@ -171,6 +171,7 @@ jobs:
       checks: write
       pull-requests: write
     strategy:
+      fail-fast: false
       matrix:
         tari_target_network: [
           { target: "testnet", network: "testnet" },

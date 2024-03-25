@@ -329,9 +329,9 @@ fn kernel_metadata() {
     #[cfg(tari_target_network_mainnet)]
     match Network::get_current_or_user_setting_or_default() {
         Network::MainNet => {
-            eprintln!("This test is configured for stagenet only");
+            eprintln!("This test is configured for testnet only");
         },
-        Network::StageNet => assert_eq!(
+        Network::TestNet => assert_eq!(
             &k.hash().to_hex(),
             "75a357c2769098b19a6aedc7e46f6be305f4f1a1831556cd380b0b0f20bfdf12"
         ),

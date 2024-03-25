@@ -42,7 +42,7 @@ impl Target {
         // regarding the endless testnet possibilities. This minor MainNet, StageNet, and NextNet
         // duplication allows us to leave the crate dependency free.
         match value.to_lowercase().as_str() {
-            "mainnet" | "stagenet" => Target::MainNet,
+            "mainnet" => Target::MainNet,
             _ => Target::TestNet,
         }
     }
