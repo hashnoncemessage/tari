@@ -20,7 +20,7 @@ concurrency:
 jobs:
   coverage:
     name: test and generate coverage
-    runs-on: [ self-hosted, ubuntu-high-mem ]
+    runs-on: [ubuntu-latest]
     steps:
       - name: checkout source code
         uses: actions/checkout@v4
@@ -45,4 +45,3 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           format: lcov
           file: lcov.info
-
