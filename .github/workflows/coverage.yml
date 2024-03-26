@@ -7,7 +7,7 @@ name: Source Coverage
 'on':
   push:
     branches:
-      - development
+      #- development
       - ci-coverage-*
 
 env:
