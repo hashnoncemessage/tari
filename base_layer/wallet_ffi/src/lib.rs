@@ -123,6 +123,7 @@ use tari_common_types::{
     tari_address::{TariAddress, TariAddressError},
     transaction::{TransactionDirection, TransactionStatus, TxId},
     types::{ComAndPubSignature, Commitment, PublicKey, SignatureWithDomain},
+    wallet_types::WalletType,
 };
 use tari_comms::{
     multiaddr::Multiaddr,
@@ -2506,8 +2507,8 @@ pub unsafe extern "C" fn seed_words_get_at(
         error = LibWalletError::from(InterfaceError::NullError("seed words".to_string())).code;
         ptr::swap(error_out, &mut error as *mut c_int);
     } else {
-        let len = (*seed_words).0.len() - 1; // clamp to length
-        if position > len as u32 {
+        let len = (*seed_words).0.len(); // clamp to length
+        if (*seed_words).0.is_empty() || position > (len - 1) as u32 {
             error = LibWalletError::from(InterfaceError::PositionInvalidError).code;
             ptr::swap(error_out, &mut error as *mut c_int);
         } else if let Ok(v) = CString::new(
@@ -5528,6 +5529,7 @@ pub unsafe extern "C" fn wallet_create(
         key_manager_backend,
         shutdown.to_signal(),
         master_seed,
+        WalletType::Software,
     ));
 
     match w {

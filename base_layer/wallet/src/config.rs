@@ -32,7 +32,7 @@ use tari_common::{
     configuration::{serializers, Network, StringList},
     SubConfigPath,
 };
-use tari_common_types::grpc_authentication::GrpcAuthentication;
+use tari_common_types::{grpc_authentication::GrpcAuthentication, wallet_types::WalletType};
 use tari_comms::multiaddr::Multiaddr;
 use tari_p2p::P2pConfig;
 use tari_utilities::SafePassword;
@@ -118,6 +118,13 @@ pub struct WalletConfig {
     pub use_libtor: bool,
     /// A path to the file that stores the base node identity and secret key
     pub identity_file: Option<PathBuf>,
+    /// The type of wallet software, or specific type of hardware
+    pub wallet_type: Option<WalletType>,
+    /// The cool down period between balance enquiry checks in seconds; requests faster than this will be ignored.
+    /// For specialized wallets processing many batch transactions this setting could be increased to 60 s to retain
+    /// responsiveness of the wallet with slightly delayed balance updates
+    #[serde(with = "serializers::seconds")]
+    pub balance_enquiry_cooldown_period: Duration,
 }
 
 impl Default for WalletConfig {
@@ -156,6 +163,8 @@ impl Default for WalletConfig {
             num_required_confirmations: 3,
             use_libtor: true,
             identity_file: None,
+            wallet_type: None,
+            balance_enquiry_cooldown_period: Duration::from_secs(5),
         }
     }
 }
